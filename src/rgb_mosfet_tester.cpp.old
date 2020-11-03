@@ -1,0 +1,33 @@
+#include <Arduino.h>
+#include <RgbMosfetStrip.h>
+
+#define RED_LED 9
+#define GREEN_LED 10
+#define BLUE_LED 11
+
+RgbMosfetStrip strip = RgbMosfetStrip(RED_LED, GREEN_LED, BLUE_LED);
+
+void setup() {
+  Serial.begin(9600);
+
+  strip.begin();
+}
+
+void loop() {
+  for (int i=0; i<256; i++) {
+    strip.setRedBrightness(i);
+    delay(10);
+  }
+
+  for (int i=0; i<256; i++) {
+    strip.setGreenBrightness(i);
+    delay(10);
+  }
+
+  for (int i=0; i<256; i++) {
+    strip.setBlueBrightness(i);
+    delay(10);
+  }
+
+  strip.turnOff();
+}
