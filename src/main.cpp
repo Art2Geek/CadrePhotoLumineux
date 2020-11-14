@@ -20,8 +20,7 @@
 #define TOWERS_LEFT_PIXELS 1
 #define TOWERS_RIGHT_PIXELS 4
 
-// how much serial data we expect before a newline
-const unsigned int MAX_INPUT = 50;
+String btString = "";
 
 RgbMosfetStrip ambiantStrip = RgbMosfetStrip(RED_LED, GREEN_LED, BLUE_LED);
 Adafruit_NeoPixel seaStrip = Adafruit_NeoPixel(SEA_PIXELS, SEA_STRIP, NEO_GRB + NEO_KHZ800);
@@ -30,9 +29,9 @@ Adafruit_NeoPixel bridgeTopStrip = Adafruit_NeoPixel(BRIDGE_TOP_PIXELS, BRIDGE_T
 Adafruit_NeoPixel towersLeftStrip = Adafruit_NeoPixel(TOWERS_LEFT_PIXELS, TOWERS_LEFT, NEO_GRB + NEO_KHZ800);
 Adafruit_NeoPixel towersRightStrip = Adafruit_NeoPixel(TOWERS_RIGHT_PIXELS, TOWERS_RIGHT, NEO_GRB + NEO_KHZ800);
 
-AnimatedStrip animatedSeaStrip = AnimatedStrip(seaStrip);
-AnimatedStrip animatedBridgeBottomStrip = AnimatedStrip(bridgeBottomStrip);
-AnimatedStrip animatedBridgeTopStrip = AnimatedStrip(bridgeTopStrip);
+// AnimatedStrip animatedSeaStrip = AnimatedStrip(seaStrip);
+// AnimatedStrip animatedBridgeBottomStrip = AnimatedStrip(bridgeBottomStrip);
+// AnimatedStrip animatedBridgeTopStrip = AnimatedStrip(bridgeTopStrip);
 
 SoftwareSerial BTSerial(15, 16);
 
@@ -60,15 +59,45 @@ void changeColor(String inputString) {
 
   if (strip == "A") {
     ambiantStrip.fill(red, green, blue);
+  } else if (strip == "S") {
+    seaStrip.fill(seaStrip.Color(red, green, blue), 0, seaStrip.numPixels());
+    seaStrip.show();
+  } else if (strip == "BB") {
+    bridgeBottomStrip.fill(bridgeBottomStrip.Color(red, green, blue), 0, bridgeBottomStrip.numPixels());
+    bridgeBottomStrip.show();
+  } else if (strip == "BT") {
+    bridgeTopStrip.fill(bridgeTopStrip.Color(red, green, blue), 0, bridgeTopStrip.numPixels());
+    bridgeTopStrip.show();
+  } else if (strip == "TL") {
+    towersLeftStrip.fill(towersLeftStrip.Color(red, green, blue), 0, towersLeftStrip.numPixels());
+    towersLeftStrip.show();
+  } else if (strip == "TR") {
+    towersRightStrip.fill(towersRightStrip.Color(red, green, blue), 0, towersRightStrip.numPixels());
+    towersRightStrip.show();
   }
+}
+
+// Input a value 0 to 255 to get a color value.
+// The colours are a transition r - g - b - back to r.
+uint32_t Wheel(byte WheelPos) {
+  WheelPos = 255 - WheelPos;
+  if(WheelPos < 85) {
+    return seaStrip.Color(255 - WheelPos * 3, 0, WheelPos * 3);
+  }
+  if(WheelPos < 170) {
+    WheelPos -= 85;
+    return seaStrip.Color(0, WheelPos * 3, 255 - WheelPos * 3);
+  }
+  WheelPos -= 170;
+  return seaStrip.Color(WheelPos * 3, 255 - WheelPos * 3, 0);
 }
 
 void mode0() {
   Serial.println("Mode 0");
 
-  animatedSeaStrip.setFixedMode();
-  animatedBridgeBottomStrip.setFixedMode();
-  animatedBridgeTopStrip.setFixedMode();
+  // animatedSeaStrip.setFixedMode();
+  // animatedBridgeBottomStrip.setFixedMode();
+  // animatedBridgeTopStrip.setFixedMode();
 
   // seaStrip.clear();
   seaStrip.fill(seaStrip.Color(0, 127, 255), 0, SEA_PIXELS);
@@ -90,11 +119,22 @@ void mode0() {
 void mode1() {
   Serial.println("Mode 1");
 
-  animatedSeaStrip.setRainbowCyclesMode();
-  animatedBridgeBottomStrip.setTheaterChaseMode();
-  animatedBridgeTopStrip.setTheaterChaseMode();
+  // animatedSeaStrip.setRainbowCyclesMode();
+  // animatedBridgeBottomStrip.setTheaterChaseMode();
+  // animatedBridgeTopStrip.setTheaterChaseMode();
 
-  towersLeftStrip.fill(towersLeftStrip.Color(0, 0, 255), 0, TOWERS_LEFT_PIXELS);
+  for (int i=0; i<seaStrip.numPixels(); i++) {
+    seaStrip.setPixelColor(i, Wheel(((i * 256 / seaStrip.numPixels())) & 255));
+  }
+  seaStrip.show();
+
+  bridgeTopStrip.fill(bridgeTopStrip.Color(127, 127, 127), 0, BRIDGE_TOP_PIXELS);
+  bridgeTopStrip.show();
+
+  bridgeBottomStrip.fill(bridgeTopStrip.Color(127, 127, 127), 0, BRIDGE_BOTTOM_PIXELS);
+  bridgeBottomStrip.show();
+
+  towersLeftStrip.setPixelColor(0, towersLeftStrip.Color(0, 0, 255));
   towersLeftStrip.show();
 
   towersRightStrip.setPixelColor(0, towersRightStrip.Color(255, 0, 0));
@@ -103,10 +143,32 @@ void mode1() {
   towersRightStrip.show();
 }
 
+void mode2() {
+  Serial.println("Mode 2");
+
+  seaStrip.fill(seaStrip.Color(255, 255, 255), 0, SEA_PIXELS);
+  seaStrip.show();
+
+  bridgeBottomStrip.fill(bridgeBottomStrip.Color(255, 255, 255), 0, bridgeBottomStrip.numPixels());
+  bridgeBottomStrip.show();
+
+  bridgeTopStrip.fill(bridgeTopStrip.Color(255, 255, 255), 0, bridgeTopStrip.numPixels());
+  bridgeTopStrip.show();
+
+  towersLeftStrip.setPixelColor(0, towersLeftStrip.Color(255, 255, 255));
+  towersLeftStrip.show();
+
+  towersRightStrip.setPixelColor(0, towersRightStrip.Color(127, 127, 127));
+  towersRightStrip.fill(towersRightStrip.Color(127, 127, 127), 1, 2);
+  towersRightStrip.setPixelColor(3, towersRightStrip.Color(127, 127, 127));
+  towersRightStrip.show();
+}
+
 void changeMode(String inputString) {
   int mode = getValue(inputString, ',', 1).toInt();
 
-  // Serial.println("Change mode");
+  // Serial.print("Change mode : ");
+  // Serial.println(mode);
 
   seaStrip.clear();
   seaStrip.show();
@@ -129,67 +191,44 @@ void changeMode(String inputString) {
   else if (mode == 1) {
     mode1();
   }
+  else if (mode == 2) {
+    mode2();
+  }
 }
 
-// here to process incoming serial data after a terminator received
-void process_data (const char * data)
-{
-  // for now just display it
-  // (but you could compare it to some value, convert to an integer, etc.)
-  Serial.println(data);
+void readBTSerial() {
+  if (BTSerial.available()) {
+    char input = char(BTSerial.read());
 
-  // Get action
-  String action = getValue(data, ',', 0);
+    if (input != '\r') {
+      btString.concat(input);
+    }
 
-  Serial.print("Action : ");
-  Serial.println(action);
+    if (input == '\n') {
+      Serial.println("Ready");
+      Serial.println(btString);
 
-  // Color
-  if (action == "C") {
-    changeColor(data);
+      // // Get action
+      String action = getValue(btString, ',', 0);
+
+      // Color
+      if (action == "C") {
+        changeColor(btString);
+      }
+
+      // Mode
+      if (action == "M") {
+        changeMode(btString);
+      }
+
+      btString = "";
+    }
   }
-
-  // Mode
-  if (action == "M") {
-    changeMode(data);
-  }
-}  // end of process_data
-
-void processIncomingByte (const byte inByte)
-{
-  static char input_line [MAX_INPUT];
-  static unsigned int input_pos = 0;
-
-  switch (inByte)
-  {
-
-    case '\n':   // end of text
-      input_line[input_pos] = 0;  // terminating null byte
-
-      // terminator reached! process input_line here ...
-      process_data(input_line);
-
-      // reset buffer for next time
-      input_pos = 0;
-      break;
-
-    case '\r':   // discard carriage return
-      break;
-
-    default:
-      // keep adding if not full ... allow for terminating null byte
-      if (input_pos < (MAX_INPUT - 1))
-        input_line [input_pos++] = inByte;
-      break;
-
-    }  // end of switch
-
-} // end of processIncomingByte
+}
 
 void setup() {
   // Initialize monitor
   Serial.begin(9600);
-  delay(1000);
   Serial.write("Interface série initalisée");
 
   // Initialize Bluetooth monitor
@@ -221,22 +260,27 @@ void setup() {
   towersRightStrip.setBrightness(50);
   towersRightStrip.show();
 
-  animatedSeaStrip.begin();
-  animatedBridgeBottomStrip.begin();
-  animatedBridgeTopStrip.begin();
+  // animatedSeaStrip.begin();
+  // animatedBridgeBottomStrip.begin();
+  // animatedBridgeTopStrip.begin();
 
-  mode1();
+  randomSeed(analogRead(0));
+  int rand = random(3);
+
+  if (rand == 0) {
+    mode0();
+  } else if (rand == 1) {
+    mode1();
+  } else {
+    mode2();
+  }
 }
 
 void loop() {
-  // readBTSerial();
+  readBTSerial();
 
-  while (BTSerial.available() > 0) {
-    processIncomingByte(BTSerial.read());
-  }
-
-  // do other stuff here like testing digital input (button presses) ...
-  animatedSeaStrip.update();
-  animatedBridgeBottomStrip.update();
-  animatedBridgeTopStrip.update();
+  // // do other stuff here like testing digital input (button presses) ...
+  // animatedSeaStrip.update();
+  // animatedBridgeBottomStrip.update();
+  // animatedBridgeTopStrip.update();
 }
