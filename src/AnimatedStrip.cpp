@@ -45,35 +45,35 @@ void AnimatedStrip::update() {
       break;
 
     case WIPE:
-      if ((unsigned long)(millis() - colorWipePreviousMillis) >= pixelsInterval) {
+      if (millis() - colorWipePreviousMillis >= pixelsInterval) {
         colorWipePreviousMillis = millis();
         AnimatedStrip::colorWipe(m_strip.Color(0,255,125));
       }
       break;
 
     case THEATER_CHASE:
-      if ((unsigned long)(millis() - theaterChasePreviousMillis) >= pixelsInterval) {
+      if (millis() - theaterChasePreviousMillis >= pixelsInterval) {
         theaterChasePreviousMillis = millis();
         AnimatedStrip::theaterChase(m_strip.Color(127, 127, 127)); // White
       }
       break;
 
     case THEATER_CHASE_RAINBOW:
-      if ((unsigned long)(millis() - theaterChaseRainbowPreviousMillis) >= pixelsInterval) {
+      if (millis() - theaterChaseRainbowPreviousMillis >= pixelsInterval) {
         theaterChaseRainbowPreviousMillis = millis();
         AnimatedStrip::theaterChaseRainbow();
       }
       break;
 
     case RAINBOW:
-      if ((unsigned long)(millis() - rainbowPreviousMillis) >= pixelsInterval) {
+      if (millis() - rainbowPreviousMillis >= pixelsInterval) {
         rainbowPreviousMillis = millis();
         AnimatedStrip::rainbow();
       }
       break;
 
     case RAINBOW_CYCLES:
-      if ((unsigned long)(millis() - rainbowCyclesPreviousMillis) >= pixelsInterval) {
+      if (millis() - rainbowCyclesPreviousMillis >= pixelsInterval) {
         rainbowCyclesPreviousMillis = millis();
         AnimatedStrip::rainbowCycle();
       }

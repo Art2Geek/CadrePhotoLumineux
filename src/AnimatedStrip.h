@@ -62,14 +62,14 @@ class AnimatedStrip
 
         states_t m_state; // current state machine state
         uint16_t m_pixel = 0; // Current pixel
-        int m_numPixels;
+        unsigned long m_numPixels;
 
-        uint32_t pixelsInterval=150;  // the time we need to wait
-        uint32_t colorWipePreviousMillis=0;
-        uint32_t theaterChasePreviousMillis=0;
-        uint32_t theaterChaseRainbowPreviousMillis=0;
-        uint32_t rainbowPreviousMillis=0;
-        uint32_t rainbowCyclesPreviousMillis=0;
+        unsigned long pixelsInterval=150;  // the time we need to wait
+        unsigned long colorWipePreviousMillis=0;
+        unsigned long theaterChasePreviousMillis=0;
+        unsigned long theaterChaseRainbowPreviousMillis=0;
+        unsigned long rainbowPreviousMillis=0;
+        unsigned long rainbowCyclesPreviousMillis=0;
 
 
         int theaterChaseQ = 0;
